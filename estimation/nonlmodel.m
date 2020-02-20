@@ -1,0 +1,30 @@
+function [ qdd ] = nonlmodel( in )
+tau=in(1:3);
+q=in(4:6);
+qd=in(7:9);
+I1x=1;
+I1y=0.5;
+I1z=0.25;
+I2x=0.3;
+I2y=0.5;
+I2z=0.1;
+I3x=0.2;
+I3y=0.6;
+I3z=0.7;
+m1=0.110;
+m2=0.160;
+m3=0.175;
+l1=0.085;
+l2=0.118;
+l3=0.085+0.087;
+b1=0;
+b2=0.0095;
+b3=0.0074;
+g=10;
+M=[I1x+I1y+I2x*cos(q(2))^2+I2y*sin(q(2))^2+I2z+I3x*cos(q(2)+q(3))^2+I3y*sin(q(2)+q(3))^2+I3z+m3*l2*cos(q(2))^2+m3*l2*l3*cos(q(2))*cos(q(2)+q(3)) 0 0;0 I2x+I2y+I3x+I3y+m3*l2^2+m3*l2*l3*cos(q(3)) I3x+I3y+1/2*m3*l2*l3*cos(q(3)); 0 I3x+I3y+1/2*m3*l2*l3*cos(q(3)) I3x+I3y];
+B=[(I2y-I2x)*sin(q(2))*cos(q(2))+(I3y-I3x)*sin(q(2)+q(3))*cos(q(2)+q(3))-m3*l2^2*sin(q(2))*cos(q(2))-1/2*m3*l2*l3*sin(2*q(2)+q(3)) (I3y-I3x)*sin(q(2)+q(3))*cos(q(2)+q(3))-1/2*m3*l2*l3*cos(q(2))*sin(q(2)+q(3)) 0;0 0 -1/2*m2*l2*l3*sin(q(3)); 0 0 0];
+C=[0 0 0;(I2x-I2y)*sin(q(2))*cos(q(2))+(I3x-I3y)*sin(q(2)+q(3))*cos(q(2)+q(3))+m3*l2^2*sin(q(2))*cos(q(2))+1/2*m3*l2*l3*sin(2*q(2)+q(3)) 0 -1/2*m2*l2*l3*sin(q(3)); (I3x-I3y)*sin(q(2)+q(3))*cos(q(2)+q(3))+1/2*m3*l2*l3*cos(q(2))*sin(q(2)+q(3)) 1/2*m3*l2*l3*sin(q(3)) 0];
+G=[0;(1/2*m2+m3)*g*l2*cos(q(2))+1/2*m3*g*l3*cos(q(2)+q(3));1/2*m3*g*l3*cos(q(2)+q(3))];
+qdd=inv(M)*(-2*B*[qd(1)*qd(2);qd(1)*qd(3);qd(2)*qd(3)]-C*[qd(1)^2; qd(2)^2; qd(3)^2]+tau+[b1 0 0;0 b2 0;0 0 b3]*[q1d;q2d;q3d]);
+end
+
